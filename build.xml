@@ -11,6 +11,7 @@
 
 
 	<property name="dist.dir" value="dist" />
+	<property name="dist.version" value="1.0" />
 
 	<property name="build.java.dir" value="classes/java" />
 	<property name="build.demo.dir" value="classes/demo" />
@@ -74,7 +75,7 @@
 
 
 	<!-- This target should be called before all other targets to set timestamps etc. -->
-	<target name="init">
+	<target name="init" description="Set up directories, timestampes, etc.">
 		<tstamp>
 			<format property="tstamp.date" pattern="yyyyMMdd" locale="en" />
 			<format property="tstamp.date_and_time" pattern="yyyyMMdd_HHmmss" locale="en" />
@@ -141,7 +142,7 @@
 
 	
 	<target name="dist-src" depends="init, clean" description="Make the source distribution.">
-		<zip destfile="${dist.dir}/${app.name.short}-src.zip">
+		<zip destfile="${dist.dir}/${app.name.short}-src-${dist.version}.zip">
 			<fileset refid="fileset:versioncontrolled.all" />
 		</zip>
 	</target>
@@ -152,7 +153,7 @@
 		<antcall target="build-java" />
 		<antcall target="build-demo" />
 		<antcall target="javadoc" />
-		<zip destfile="${dist.dir}/${app.name.short}-bin.zip">	
+		<zip destfile="${dist.dir}/${app.name.short}-bin-${dist.version}.zip">	
 			<fileset file="${jar.java.file}" />
 			<fileset file="${jar.demo.file}" />
 			<fileset dir="${basedir}">
