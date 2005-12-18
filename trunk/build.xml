@@ -23,6 +23,9 @@
 	<!-- javadoc -->
 	<property name="doc.api.java.dir" value="${doc.dir}/javadoc" />
 
+	<property name="web.dir" value="www" />
+	<property name="web.javadoc.dir" value="www/docs/javadoc" />
+	
 	<property name="jar.java.file" value="${dist.dir}/interruptiblermi.jar" />
 	<property name="jar.demo.file" value="${dist.dir}/interruptiblermi-demo.jar" />
 
@@ -204,9 +207,17 @@
 	</target>
 
 
+	<target name="web-javadoc" description="Build javadoc into www directory">
+		<mkdir dir="${web.javadoc.dir}" />
+		<delete includeemptydirs="true">
+			<fileset dir="${web.javadoc.dir}" includes="*/**" excludes="**/CVS/**"/>
+		</delete>
+		<javadoc packagenames="*" source="1.5" sourcepath="${src.java.dir}" destdir="${web.javadoc.dir}" windowtitle="${app.name.long} API Documentation" access="protected">
+			<classpath refid="path:project.classpath" />
+		</javadoc>
+	</target>
 
-
-	<target name="javadoc">
+	<target name="javadoc" description="Build javadoc into the local javadoc directory">
 		<mkdir dir="${doc.api.java.dir}" />
 		<delete includeemptydirs="true">
 			<fileset dir="${doc.api.java.dir}" includes="*/**" />
