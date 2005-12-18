@@ -7,7 +7,7 @@
 <body>
 <h1>Interruptible RMI Library</h1>
 <p>The Interruptible RMI library provides a mechanism to interrupt RMI calls. Typically when a thread invokes an RMI method, the thread blocks until the RMI method returns. If the method call is taking too long (e.g. if the RMI server is busy, or hangs, or if the user wants to cancel the RMI operation), there is no provided mechanism to interrupt the blocking RMI call. The Interruptible RMI library provides this functionality. The library consists of two key components: an RMISocketFactory and a ThreadFactory. RMI calls made on a thread from the provided ThreadFactory to an RMI interface using sockets from the RMISocketFactory can be interrupted by calling <code>Thread#interrupt()</code> on the client thread. So, it's really easy to use, but note that the implementation isn't always entirely that trivial. In particular, on the server-side you may wish to add a call to a handy utility method to ensure that the current thread isn't a "zombie thread" that has already been "interrupted" by the client. There is a demonstration application provided with the library that shows exactly how to do this.</p>
-<p>For more information, the best place is to start is the online <a href="docs/javadoc/index.html">javadoc</a>. Then download the source distribution (from the "1.0" folder in <a href="/servlets/ProjectDocumentList">Documents &amp; files</a>) and run the demo app. Enjoy!</p>
+<p>For more information, the best place is to start is the online <a href="/docs/javadoc/index.html">javadoc</a>. Then download the source distribution (from the "1.0" folder in <a href="/servlets/ProjectDocumentList">Documents &amp; files</a>) and run the demo app. Enjoy!</p>
 </body>
 </html>
 
