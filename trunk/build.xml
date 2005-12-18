@@ -1,0 +1,231 @@
+<project name="interruptiblermi" default="build-java" basedir=".">
+
+
+	<property file="build.properties" />
+
+
+
+	<!-- main java code -->
+	<property name="src.java.dir" value="src" />
+	<property name="src.demo.dir" value="src-demo" />
+
+
+	<property name="dist.dir" value="dist" />
+
+	<property name="build.java.dir" value="classes/java" />
+	<property name="build.demo.dir" value="classes/demo" />
+
+	<property name="backup.dir" value="backup" />
+
+
+	<property name="doc.dir" value="docs" />
+
+	<!-- javadoc -->
+	<property name="doc.api.java.dir" value="${doc.dir}/javadoc" />
+
+	<property name="jar.java.file" value="${dist.dir}/interruptiblermi.jar" />
+	<property name="jar.demo.file" value="${dist.dir}/interruptiblermi-demo.jar" />
+
+
+
+	<!-- "app.name.short" is used for creating dists, i.e. JARs, WARs, etc.. E.g. ${name.short}.jar -->
+	<property name="app.name.short" value="interruptiblermi" />
+	<!-- "app.name.long" : long descriptive name for project -->
+	<property name="app.name.long" value="Interruptible RMI Library" />
+
+
+
+	<!-- set up filesets  -->
+	<fileset id="fileset:src.java" dir="${src.java.dir}" includes="**/*.java" />
+	<fileset id="fileset:src.demo" dir="${src.test.dir}" includes="**/*.java" />
+
+
+
+
+	<fileset id="fileset:versioncontrolled.all" dir="${basedir}">
+		<include name="src/**" />
+		<include name="src-demo/**" />
+		<include name="build.xml" />
+		<include name="docs/**" />
+		<exclude name="docs/javadoc/**" />
+		<exclude name="**/CVS/**" />
+	</fileset>
+
+
+
+	<!-- set up source path -->
+
+	<path id="path:project.sourcepath">
+		<pathelement path="${src.java.dir}" />
+		<pathelement path="${src.demo.dir}" />
+	</path>
+
+
+	<!-- set up classpath -->
+	<path id="path:project.classpath">
+		<pathelement path="${build.java.dir}" />
+		<pathelement path="${build.demo.dir}" />
+	</path>
+
+
+
+
+	<!-- This target should be called before all other targets to set timestamps etc. -->
+	<target name="init">
+		<tstamp>
+			<format property="tstamp.date" pattern="yyyyMMdd" locale="en" />
+			<format property="tstamp.date_and_time" pattern="yyyyMMdd_HHmmss" locale="en" />
+		</tstamp>
+
+		<!-- Create the build directory structure (even if it already exists) -->
+		<mkdir dir="${build.java.dir}" />
+		<mkdir dir="${build.demo.dir}" />
+
+
+		<mkdir dir="${dist.dir}" />
+		<mkdir dir="${src.java.dir}" />
+		<mkdir dir="${src.demo.dir}" />
+		<mkdir dir="${doc.api.java.dir}" />
+	</target>
+
+
+	<target name="rmic" depends="init">
+		<rmic base="${build.demo.dir}" classname="org.neilja.net.interruptiblermi.demo.server" sourcebase="${src.demo.dir}" debug="true" />
+	</target>
+
+
+	<target name="compile-java" depends="init" description="Compile main (non-test) java code into ${build.java.dir}.">
+		<!-- compile main java classes -->
+		<javac srcdir="${src.java.dir}" compiler="javac1.5" destdir="${build.java.dir}" classpathref="path:project.classpath" debug="on" includes="**/*.java" />
+
+	</target>
+
+	<target name="compile-demo" depends="init" description="Compile test code into ${build.demo.dir}.">
+		<!-- compile test classes -->
+		<javac srcdir="${src.demo.dir}" compiler="javac1.5" destdir="${build.demo.dir}" classpathref="path:project.classpath" debug="on" includes="**/*.java" />
+	</target>
+
+
+	<target name="build-java" depends="init">
+		<copy todir="${build.java.dir}">
+			<fileset dir="${src.java.dir}" excludes="**/*.java, **/*.html" />
+		</copy>
+		<antcall target="compile-java" />
+		<jar jarfile="${jar.java.file}" basedir="${build.java.dir}" includes="**/**" />
+	</target>
+
+
+	<target name="build-demo" depends="init">
+		<antcall target="compile-java" />
+		<antcall target="compile-demo" />
+		<jar jarfile="${jar.demo.file}" manifest="${src.demo.dir}/META-INF/MANIFEST.MF">
+			<fileset dir="${build.java.dir}" />
+			<fileset dir="${build.demo.dir}" />
+		</jar>
+	</target>
+
+
+
+
+	<target name="dist" depends="init, clean, build-java, build-demo, javadoc" description="Packages build items for submission">
+		<property name="dist.name" value="${tstamp.date_and_time}" />
+		<property name="dist.contents.dir" value="${dist.dir}/${dist.name}/contents" />
+		<mkdir dir="${dist.contents.dir}" />
+
+		<copy todir="${dist.contents.dir}" file="${stage.dir}/runme.jar" />
+		<copy todir="${dist.contents.dir}" file="${src.data.datafile}" />
+
+		<mkdir dir="${dist.contents.dir}/code" />
+		<copy todir="${dist.contents.dir}/code">
+			<fileset dir="${src.java.dir}" />
+		</copy>
+
+		<copy todir="${dist.contents.dir}" file="${doc.dir}/version.txt" />
+
+		<property name="dist.contents.docs.dir" value="${dist.contents.dir}/docs" />
+
+		<mkdir dir="${dist.contents.docs.dir}/javadoc" />
+		<copy todir="${dist.contents.docs.dir}/javadoc">
+			<fileset dir="${doc.api.java.dir}" />
+		</copy>
+
+		<copy todir="${dist.contents.docs.dir}/userguide">
+			<fileset dir="${doc.dir}/userguide" />
+		</copy>
+
+
+		<copy todir="${dist.contents.docs.dir}" file="${doc.dir}/instructions.html" />
+		<copy todir="${dist.contents.docs.dir}" file="${doc.dir}/choices.txt" />
+		<copy todir="${dist.contents.docs.dir}" file="${doc.dir}/userguide.html" />
+
+
+		<jar jarfile="${dist.dir}/${dist.name}/scjda-SR1488082.jar" basedir="${dist.contents.dir}" includes="**/**" />
+
+	</target>
+
+
+	<target name="backup" depends="init, clean" description="Make a backup of source files into ${backup.dir}">
+		<mkdir dir="${backup.dir}" />
+		<zip destfile="${backup.dir}/${app.name.short}-${tstamp.date_and_time}-src.zip">
+			<fileset refid="fileset:versioncontrolled.all" />
+		</zip>
+	</target>
+
+
+	
+	<target name="dist-src" depends="init, clean" description="Make the source distribution.">
+		<zip destfile="${dist.dir}/${app.name.short}-src.zip">
+			<fileset refid="fileset:versioncontrolled.all" />
+		</zip>
+	</target>
+	
+	
+	<target name="dist-bin" depends="init, clean" description="Make the source distribution.">
+		
+		<antcall target="build-java" />
+		<antcall target="build-demo" />
+		<antcall target="javadoc" />
+		<zip destfile="${dist.dir}/${app.name.short}-bin.zip">	
+			<fileset file="${jar.java.file}" />
+			<fileset file="${jar.demo.file}" />
+			<fileset dir="${basedir}">
+				<include name="docs/**" />
+				<exclude name="**/CVS/**" />
+			</fileset>
+		</zip>
+	</target>
+
+	<target name="clean" depends="init">
+		<delete includeemptydirs="true">
+			<fileset dir="${build.java.dir}" includes="**/**" />
+			<fileset dir="${build.demo.dir}" includes="**/**" />
+			<fileset dir="${doc.api.java.dir}" includes="*/**" />
+		</delete>
+	</target>
+
+
+
+
+	<target name="javadoc">
+		<mkdir dir="${doc.api.java.dir}" />
+		<delete includeemptydirs="true">
+			<fileset dir="${doc.api.java.dir}" includes="*/**" />
+		</delete>
+		<javadoc packagenames="*" source="1.5" sourcepath="${src.java.dir}" destdir="${doc.api.java.dir}" windowtitle="${app.name.long} API Documentation" access="protected">
+			<classpath refid="path:project.classpath" />
+		</javadoc>
+	</target>
+
+
+
+	<target name="start-demo-rmiserver">
+		<java classname="org.neilja.net.interruptiblermi.demo.client.LockServiceClientUI" classpathref="path:project.classpath" fork="yes" />
+	</target>
+
+	<target name="start-demo-client">
+		<java classname="org.neilja.net.interruptiblermi.demo.server.LockServiceServer" classpathref="path:project.classpath" fork="yes" />
+
+	</target>
+
+
+</project>
