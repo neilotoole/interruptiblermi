@@ -130,42 +130,6 @@
 
 
 
-	<target name="dist" depends="init, clean, build-java, build-demo, javadoc" description="Packages build items for submission">
-		<property name="dist.name" value="${tstamp.date_and_time}" />
-		<property name="dist.contents.dir" value="${dist.dir}/${dist.name}/contents" />
-		<mkdir dir="${dist.contents.dir}" />
-
-		<copy todir="${dist.contents.dir}" file="${stage.dir}/runme.jar" />
-		<copy todir="${dist.contents.dir}" file="${src.data.datafile}" />
-
-		<mkdir dir="${dist.contents.dir}/code" />
-		<copy todir="${dist.contents.dir}/code">
-			<fileset dir="${src.java.dir}" />
-		</copy>
-
-		<copy todir="${dist.contents.dir}" file="${doc.dir}/version.txt" />
-
-		<property name="dist.contents.docs.dir" value="${dist.contents.dir}/docs" />
-
-		<mkdir dir="${dist.contents.docs.dir}/javadoc" />
-		<copy todir="${dist.contents.docs.dir}/javadoc">
-			<fileset dir="${doc.api.java.dir}" />
-		</copy>
-
-		<copy todir="${dist.contents.docs.dir}/userguide">
-			<fileset dir="${doc.dir}/userguide" />
-		</copy>
-
-
-		<copy todir="${dist.contents.docs.dir}" file="${doc.dir}/instructions.html" />
-		<copy todir="${dist.contents.docs.dir}" file="${doc.dir}/choices.txt" />
-		<copy todir="${dist.contents.docs.dir}" file="${doc.dir}/userguide.html" />
-
-
-		<jar jarfile="${dist.dir}/${dist.name}/scjda-SR1488082.jar" basedir="${dist.contents.dir}" includes="**/**" />
-
-	</target>
-
 
 	<target name="backup" depends="init, clean" description="Make a backup of source files into ${backup.dir}">
 		<mkdir dir="${backup.dir}" />
@@ -183,7 +147,7 @@
 	</target>
 	
 	
-	<target name="dist-bin" depends="init, clean" description="Make the source distribution.">
+	<target name="dist-bin" depends="init, clean" description="Make the binary distribution. Doesn't include source code.">
 		
 		<antcall target="build-java" />
 		<antcall target="build-demo" />
