@@ -83,6 +83,36 @@
  * that the RMI call has indeed been interrupted.
  * </p>
  * 
+ * <p>
+ * Note that the {@link org.neilja.net.interruptiblermi.InterruptibleRMISocketFactory#isCurrentRMIServerThreadSocketAlive()}
+ * method only gives useful results if called from an RMI server thread. If called from a non-RMI
+ * server thread, this method will always return <code>false</code>. Therefore, the
+ * {@link org.neilja.net.interruptiblermi.InterruptibleRMISocketFactory#isCurrentThreadRMIServer()}
+ * method is provided to determine whether the current thread is an RMI server thread (i.e. has
+ * been associated with an RMI server socket). This can be useful for applications where the same
+ * code may be executed in response to client requests or as server-side maintenance tasks.
+ * </p>
+ * 
+ * <p>
+ * Therefore, the previous sample code could be re-written as follows to apply to general server threads:
+ * 
+ * <pre>
+ * while (isContestedResourceAvailable == false)
+ * {
+ * 	this.wait();
+ * 
+ * 	// on wakeup
+ * 	if (InterruptibleRMISocketFactory.isCurrentThreadRMIServer() == true &&
+ * 	    InterruptibleRMISocketFactory.isCurrentRMIServerThreadSocketAlive() == false)
+ * 	{
+ * 		// this thread is a &quot;zombie&quot; thread - time to die!
+ * 		throw new RuntimeException(&quot;The RMI socket associated with this thread is not alive&quot;);
+ * 	}
+ * 
+ * 	// otherwise, do something fun with the acquired resource...
+ * }
+ * </pre>
+ * </p>
  * 
  * @author neilotoole@apache.org
  * @see org.neilja.net.interruptiblermi.InterruptibleRMISocketFactory
