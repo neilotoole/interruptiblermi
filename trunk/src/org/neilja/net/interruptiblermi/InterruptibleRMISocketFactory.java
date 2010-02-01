@@ -173,4 +173,19 @@ public class InterruptibleRMISocketFactory extends RMISocketFactory
 		return InterruptibleRMIServerSideSocket.isCurrentRMIServerThreadSocketAlive();
 	}
 
+	/**
+	 * Return true if the current thread is an RMI server thread. This method is useful in
+	 * situations where the same code may be executed in different contexts as the result of an
+	 * RMI call or as the result of server-side tasks. If this method returns false for a given
+	 * thread, then {@link #isCurrentRMIServerThreadSocketAlive()} will never return true for that
+	 * same thread under normal circumstances.
+	 */
+	public static boolean isCurrentThreadRMIServer()
+	{
+		/*
+		 * Delegate to the same method in InterruptibleRMIServerSideSocket.
+		 * The public-access caveats in isCurrentRMIServerThreadSocketAlive apply here as well.
+		 */
+		return InterruptibleRMIServerSideSocket.isCurrentThreadRMIServer();
+	}
 }

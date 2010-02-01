@@ -39,7 +39,16 @@ class InterruptibleRMIServerSideSocket extends InterruptibleRMISocket
 	 */
 	private static Map<InterruptibleRMIServerSideSocket, Thread> socketThreadMap;
 
-
+	/**
+	 * Thread-local variable to keep track of which threads are RMI Server threads.
+	 */
+	private static final ThreadLocal<Boolean> threadIsRmi = new ThreadLocal<Boolean>()
+	{
+		protected Boolean initialValue()
+		{
+			return false;
+		}
+	};
 
 	/**
 	 * (Lazily) initialize the maps (and exception handler) for managing server RMI socket/thread
@@ -81,6 +90,7 @@ class InterruptibleRMIServerSideSocket extends InterruptibleRMISocket
 		 */
 		threadSocketMap.put(Thread.currentThread(), socket);
 		socketThreadMap.put(socket, Thread.currentThread());
+		threadIsRmi.set(true);
 	}
 
 
@@ -162,6 +172,15 @@ class InterruptibleRMIServerSideSocket extends InterruptibleRMISocket
 		}
 
 		return isAlive;
+	}
+	
+	/**
+	 * Return true if the current thread is an RMI server thread (i.e. has opened an
+	 * InterruptibleRMIServerSocket).
+	 */
+	static synchronized boolean isCurrentThreadRMIServer()
+	{
+		return threadIsRmi.get();
 	}
 
 	private Thread mostRecentThread;
