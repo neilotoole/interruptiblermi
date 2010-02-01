@@ -11,7 +11,7 @@
 
 
 	<property name="dist.dir" value="dist" />
-	<property name="dist.version" value="1.0" />
+	<property name="dist.version" value="1.1" />
 
 	<property name="build.java.dir" value="classes/java" />
 	<property name="build.demo.dir" value="classes/demo" />
