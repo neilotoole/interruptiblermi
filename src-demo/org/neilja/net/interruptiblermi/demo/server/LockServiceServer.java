@@ -151,7 +151,7 @@ public class LockServiceServer implements LockService
 			else
 			{
 				System.out.println("Unknown command. Type 'unlock' (and enter) to release lock.");
-				System.out.println("Type 'quit' (and enter) to stop the server.");
+				System.out.println("Type 'exit' (and enter) to stop the server.");
 			}
 		}
 		while (true);
