@@ -1,8 +1,28 @@
 ## Interruptible RMI
 
+The *Interruptible RMI* library provides a mechanism to interrupt Java RMI calls.
+Typically when a thread invokes an RMI method, the thread blocks until
+the RMI method returns. If the method call is taking too long (e.g. if
+the RMI server is busy, or hangs, or if the user wants to cancel the RMI
+operation), there is no easy way to interrupt the blocking RMI call and
+return control to the RMI thread. The *Interruptible RMI* library provides
+this functionality. 
+
+The library consists of two key components: an `RMISocketFactory` and a
+`ThreadFactory`. RMI calls made on a thread from the provided `ThreadFactory`
+to an RMI interface using sockets from the `RMISocketFactory` can be
+interrupted by calling `Thread#interrupt()` on the client thread. So, it's
+really easy to use. But note also on the server side that you may wish
+to add a call to a handy utility method to ensure that the current
+thread isn't a "zombie" or orphaned thread that has already been
+"interrupted" by the client. There is a demo app provided with the
+library that shows exactly how to do this. See the
+[project page](https://github.com/neilotoole/interruptiblermi) for more
+details and to download the library and demo app.
+
 
 ## From the package javadoc
-This package provides a mechanism for interrupting RMI calls. An RMISocketFactory implementation is provided ([`InterruptibleRMISocketFactory`](../../../../org/neilja/net/interruptiblermi/InterruptibleRMISocketFactory.html "class in org.neilja.net.interruptiblermi")), as well as a ThreadFactory ([`InterruptibleRMIThreadFactory`](../../../../org/neilja/net/interruptiblermi/InterruptibleRMIThreadFactory.html "class in org.neilja.net.interruptiblermi")). Install the RMISocketFactory in the standard way. This can be done by the RMI server binding the factory when calling `UnicastRemoteObject.exportObject(Remote, int, RMIClientSocketFactory, RMIServerSocketFactory)` or by the client calling `RMISocketFactory.setSocketFactory(RMISocketFactory)`.
+This package provides a mechanism for interrupting RMI calls. An `RMISocketFactory` implementation is provided (`InterruptibleRMISocketFactory`), as well as a `ThreadFactory` (`InterruptibleRMIThreadFactory`). Install the `RMISocketFactory` in the standard way. This can be done by the RMI server binding the factory when calling `UnicastRemoteObject.exportObject(Remote, int, RMIClientSocketFactory, RMIServerSocketFactory)` or by the client calling `RMISocketFactory.setSocketFactory(RMISocketFactory)`.
 
 ### Client Side
 
