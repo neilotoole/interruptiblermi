@@ -16,9 +16,7 @@ really easy to use. But note also on the server side that you may wish
 to add a call to a handy utility method to ensure that the current
 thread isn't a "zombie" or orphaned thread that has already been
 "interrupted" by the client. There is a demo app provided with the
-library that shows exactly how to do this. See the
-[project page](https://github.com/neilotoole/interruptiblermi) for more
-details and to download the library and demo app.
+library that shows exactly how to do this.
 
 
 ## From the package javadoc
@@ -58,6 +56,7 @@ Note that the `InterruptibleRMISocketFactory.isCurrentRMIServerThreadSocketAlive
 
 Therefore, the previous sample code could be re-written as follows to apply to general server threads:
 
+```java
      while (isContestedResourceAvailable == false)
      {
             this.wait();
@@ -72,8 +71,7 @@ Therefore, the previous sample code could be re-written as follows to apply to g
      
             // otherwise, do something fun with the acquired resource...
      }
-     
-
+```
 
 
 ## Interruptible RMI Demo
